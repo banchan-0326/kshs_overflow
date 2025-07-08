@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="mb-4">알림 목록</h2>
+
+        {% if notifications %}
+            <ul class="list-group">
+                {% for notification in notifications %}
+                    <li class="list-group-item {% if not notification.is_read %}list-group-item-info{% endif %}">
+                        <p>{{ notification.message }}</p>
+                        <small class="text-muted">{{ notification.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                        {% if notification.post_id %}
+                            <a href="{{ url_for('view_post', post_id=notification.post_id) }}" class="btn btn-sm btn-outline-primary float-end ms-2">게시글 보기</a>
+                        {% endif %}
+                        <!-- TODO: 개별 읽음 처리 기능 버튼 추가 -->
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>새로운 알림이 없습니다.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
