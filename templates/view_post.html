@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <!-- 게시글 내용 -->
+            <div class="card post-detail">
+                <div class="card-header">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <small class="text-muted">
+                        작성자: {{ post.author.username }} |
+                        분야: {{ post.subject }} |
+                        작성일: {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    {% if post.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" alt="{{ post.title }}" class="img-fluid rounded mb-3" style="max-height: 400px;">
+                    {% endif %}
+                    <!-- 본문 내용을 nl2br 필터 없이 그대로 출력하면 HTML 태그가 적용될 수 있음.
+                         보안을 위해, 또는 마크다운 등을 사용한다면 적절한 처리가 필요.
+                         여기서는 단순 텍스트로 가정하고 white-space: pre-wrap으로 줄바꿈을 표현. -->
+                    <p class="card-text" style="white-space: pre-wrap;">{{ post.content }}</p>
+                </div>
+                <div class="card-footer text-end">
+                    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                        <!-- <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="{{ url_for('delete_post', post_id=post.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('정말로 이 글을 삭제하시겠습니까?');">삭제</a> -->
+                        <!-- TODO: 수정/삭제 기능은 추후 구현 -->
+                    {% endif %}
+                    <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-primary">목록으로</a>
+                </div>
+            </div>
+
+            <!-- 댓글 섹션 (추후 구현) -->
+            <hr class="my-4">
+            <div class="comments-section">
+                <h4>댓글</h4>
+                {% if current_user.is_authenticated %}
+                    <form method="POST" action="{{ url_for('view_post', post_id=post.id) }}" class="mb-3">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-2">
+                            {{ form.content(class="form-control form-control-sm", rows="3", placeholder="댓글을 입력하세요...") }}
+                            {% if form.content.errors %}
+                                {% for error in form.content.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {{ form.submit(class="btn btn-primary btn-sm") }}
+                    </form>
+                {% else %}
+                    <p><a href="{{ url_for('login', next=request.url) }}">로그인</a> 후 댓글을 작성할 수 있습니다.</p>
+                {% endif %}
+
+                <div class="mt-3">
+                    {% if comments %}
+                        <h6>댓글 목록 ({{ comments|length }})</h6>
+                        {% for comment in comments %}
+                            <div class="card mb-2 shadow-sm">
+                                <div class="card-body py-2">
+                                    <p class="card-text mb-1" style="white-space: pre-wrap;">{{ comment.content }}</p>
+                                    <small class="text-muted">
+                                        작성자: {{ comment.author.username }} |
+                                        작성일: {{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                        {% if current_user.is_authenticated and current_user.id == comment.user_id %}
+                                        <!-- <a href="{{ url_for('delete_comment', comment_id=comment.id, post_id=post.id) }}" class="btn btn-link btn-sm text-danger p-0 ms-2">삭제</a> -->
+                                        <!-- TODO: 댓글 삭제 기능 -->
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>아직 댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

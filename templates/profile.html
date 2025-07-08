@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>{{ title }} - {{ current_user.username }}</h2>
+        <form method="POST" action="{{ url_for('profile') }}" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset class="mb-3">
+                <legend class="col-form-label col-sm-2 pt-0">동아리 정보</legend>
+                <div class="mb-3">
+                    {{ render_field(form.academic_club, class="form-control", placeholder="예: 물리반") }}
+                </div>
+                <div class="mb-3">
+                    {{ render_field(form.creative_club, class="form-control", placeholder="예: 과학탐구반") }}
+                </div>
+                <div class="mb-3">
+                    {{ render_field(form.autonomous_club1, class="form-control", placeholder="자율동아리 1 (선택)") }}
+                </div>
+                <div class="mb-3">
+                    {{ render_field(form.autonomous_club2, class="form-control", placeholder="자율동아리 2 (선택)") }}
+                </div>
+                <div class="mb-3">
+                    {{ render_field(form.autonomous_club3, class="form-control", placeholder="자율동아리 3 (선택)") }}
+                </div>
+            </fieldset>
+
+            <fieldset class="mb-3">
+                <legend class="col-form-label col-sm-2 pt-0">분야 설정</legend>
+                <div class="mb-3">
+                    {{ form.interests.label(class="form-label") }}
+                    {% for subfield in form.interests %}
+                        <div class="form-check">
+                            {{ subfield(class="form-check-input") }}
+                            {{ subfield.label(class="form-check-label") }}
+                        </div>
+                    {% endfor %}
+                    {% if form.interests.errors %}
+                        {% for error in form.interests.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.strengths.label(class="form-label") }}
+                     {% for subfield in form.strengths %}
+                        <div class="form-check">
+                            {{ subfield(class="form-check-input") }}
+                            {{ subfield.label(class="form-check-label") }}
+                        </div>
+                    {% endfor %}
+                    {% if form.strengths.errors %}
+                        {% for error in form.strengths.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <div class="mb-3">
+                {{ form.submit(class="btn btn-success w-100") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
